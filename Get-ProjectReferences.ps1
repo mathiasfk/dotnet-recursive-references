@@ -4,7 +4,7 @@ param (
 
 $OriginalDir = $(Get-Location)
 
-# Se o diretório do projeto foi informado, muda para ele
+# If the project directory was provided, change to it
 if ($ProjectDir) {
     Set-Location -Path $ProjectDir
 }
@@ -16,60 +16,60 @@ function Get-ProjectReferences {
         [System.Collections.Generic.List[System.String]]$UniqueDependencies
     )
     
-    # Inicializa o diretório de projeto se necessário
+    # Initialize the project directory if necessary
     if (-not $ProjectDir) {
-        Write-Host "Usando diretório atual como projeto"
+        Write-Host "Using current directory as project"
         $ProjectDir = $(Get-Location)
     }
 
-    # Lista referências do projeto
+    # List project references
     $references = dotnet list $ProjectDir reference | Select-String "\.csproj" | ForEach-Object { $_.Line.Trim() }
 
-    # Resolve os caminhos absolutos das referências
+    # Resolve absolute paths of references
     foreach ($ref in $references) {
-        # Resolve o caminho absoluto, tratando referências relativas como ..\..
+        # Resolve the absolute path, handling relative references like ..\..
         $ResolvedPath = Resolve-Path (Join-Path $ProjectDir $ref)
 
-        # Extrai o diretório do caminho, removendo o arquivo .csproj
+        # Extract the directory from the path, removing the .csproj file
         $FolderPath = Split-Path $ResolvedPath.Path -Parent
 
-        # Verifica se o diretório já foi visitado
+        # Check if the directory has already been visited
         if (-not $VisitedPaths.Contains($FolderPath)) {
-            # Marca o diretório como visitado
+            # Mark the directory as visited
             $VisitedPaths.Add($FolderPath)
 
-            # Adiciona a dependência à lista única
+            # Add the dependency to the unique list
             if (-not $UniqueDependencies.Contains($FolderPath)) {
                 $UniqueDependencies.Add($FolderPath)
             }
 
-            # Imprime o diretório
-            Write-Host "  📂 Visitando: $FolderPath"
+            # Print the directory
+            Write-Host "  📂 Visiting: $FolderPath"
 
-            # Faz o 'cd' para o diretório
+            # Change to the directory
             Set-Location -Path $FolderPath
 
-            # Chama a função recursivamente para o diretório atual
+            # Call the function recursively for the current directory
             Get-ProjectReferences -ProjectDir $FolderPath -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
 
-            # Retorna para o diretório anterior
+            # Return to the previous directory
             Set-Location -Path $ProjectDir
         } else {
-            Write-Host "  🔁 Já visitado: $FolderPath"
+            Write-Host "  🔁 Already visited: $FolderPath"
         }
     }
 }
 
-# Inicializa a lista de dependências e de caminhos visitados fora da função
+# Initialize the list of dependencies and visited paths outside the function
 $VisitedPaths = New-Object 'System.Collections.Generic.List[System.String]'
 $UniqueDependencies = New-Object 'System.Collections.Generic.List[System.String]'
 
-# Chama a função no início da execução do script
+# Call the function at the start of the script execution
 Get-ProjectReferences -ProjectDir $ProjectDir -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
 
-# Retorna para o diretório original
+# Return to the original directory
 Set-Location -Path $OriginalDir
 
-# Após a execução completa da recursão, imprime as dependências únicas
-Write-Host "`nDependências únicas:"
+# After the complete execution of the recursion, print the unique dependencies
+Write-Host "`nUnique dependencies:"
 $UniqueDependencies | ForEach-Object { Write-Host "  $_" }
