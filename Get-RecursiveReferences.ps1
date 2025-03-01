@@ -9,7 +9,7 @@ if ($ProjectDir) {
     Set-Location -Path $ProjectDir
 }
 
-function Get-ProjectReferences {
+function Get-RecursiveReferences {
     param (
         [string]$ProjectDir = $null,
         [System.Collections.Generic.List[System.String]]$VisitedPaths,
@@ -22,10 +22,10 @@ function Get-ProjectReferences {
         $ProjectDir = $(Get-Location)
     }
 
-    # List project references
+    # List current project references
     $references = dotnet list $ProjectDir reference | Select-String "\.csproj" | ForEach-Object { $_.Line.Trim() }
 
-    # Resolve absolute paths of references
+    # Iterate over current project references
     foreach ($ref in $references) {
         # Resolve the absolute path, handling relative references like ..\..
         $ResolvedPath = Resolve-Path (Join-Path $ProjectDir $ref)
@@ -50,7 +50,7 @@ function Get-ProjectReferences {
             Set-Location -Path $FolderPath
 
             # Call the function recursively for the current directory
-            Get-ProjectReferences -ProjectDir $FolderPath -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
+            Get-RecursiveReferences -ProjectDir $FolderPath -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
 
             # Return to the previous directory
             Set-Location -Path $ProjectDir
@@ -65,7 +65,7 @@ $VisitedPaths = New-Object 'System.Collections.Generic.List[System.String]'
 $UniqueDependencies = New-Object 'System.Collections.Generic.List[System.String]'
 
 # Call the function at the start of the script execution
-Get-ProjectReferences -ProjectDir $ProjectDir -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
+Get-RecursiveReferences -ProjectDir $ProjectDir -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
 
 # Return to the original directory
 Set-Location -Path $OriginalDir
