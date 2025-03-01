@@ -1,6 +1,16 @@
 param (
-    [string]$ProjectDir = $null
+    [string]$ProjectDir = $null,
+    [switch]$h
 )
+
+if ($h) {
+    Write-Host "Usage: .\Get-RecursiveReferences.ps1 [-ProjectDir <path>] [-h]"
+    Write-Host ""
+    Write-Host "Parameters:"
+    Write-Host "  -ProjectDir <path>  Specify the project directory to start the search."
+    Write-Host "  -h                  Display this help message."
+    exit
+}
 
 $OriginalDir = $(Get-Location)
 
