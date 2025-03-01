@@ -2,7 +2,7 @@
 Recursively finds all project dependencies in a solution.
 
 Usage:
-```ps
+```ps1
 .\Get-RecursiveReferences.ps1 [-ProjectDir <path>] [-h]
 ```
 
