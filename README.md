@@ -1,5 +1,5 @@
 # .NET Recursive References
-Recursively finds all project dependencies in a solution.
+Recursively finds all project dependencies in a solution. It runs `dotnet list reference` for each project listed as dependency of the project(s) passed as initial entrypoint(s).
 
 Usage:
 ```ps1
