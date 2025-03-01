@@ -3,7 +3,7 @@ Recursively finds all project dependencies in a solution. It runs `dotnet list r
 
 Usage:
 ```ps1
-.\Get-RecursiveReferences.ps1 [-ProjectDirs <paths>] [-h]
+.\Get-RecursiveReferences.ps1 [-ProjectDirs <paths>] [-h] [-Silent]
 ```
 
 Parameters:
