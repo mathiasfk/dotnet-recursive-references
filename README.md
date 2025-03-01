@@ -10,6 +10,7 @@ Parameters:
 ```
   -ProjectDirs <paths>  Specify the project directories to start the search.
   -ProjectDir <path>    Alias for -ProjectDirs.
+  -Silent               Dot not print the visited directories.
   -h                    Display this help message.
   -help                 Alias for -h.
 ```

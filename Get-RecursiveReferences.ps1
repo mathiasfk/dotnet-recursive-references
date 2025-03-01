@@ -2,7 +2,8 @@ param (
     [Alias("ProjectDir")]
     [string[]]$ProjectDirs = $null,
     [Alias("help")]
-    [switch]$h
+    [switch]$h,
+    [switch]$Silent
 )
 
 if ($h) {
@@ -11,6 +12,7 @@ if ($h) {
     Write-Host "Parameters:"
     Write-Host "  -ProjectDirs <paths>  Specify the project directories to start the search."
     Write-Host "  -ProjectDir <path>    Alias for -ProjectDirs."
+    Write-Host "  -Silent               Dot not print the visited directories."
     Write-Host "  -h                    Display this help message."
     Write-Host "  -help                 Alias for -h."
     exit
@@ -52,8 +54,9 @@ function Get-ProjectReferences {
                 $UniqueDependencies.Add($FolderPath)
             }
 
-            # Print the directory
-            Write-Host "  📂 Visiting: $FolderPath"
+            if(-not $Silent) {
+                Write-Host "  📂 Visiting: $FolderPath"
+            }
 
             # Change to the directory
             Set-Location -Path $FolderPath
@@ -64,7 +67,9 @@ function Get-ProjectReferences {
             # Return to the previous directory
             Set-Location -Path $ProjectDir
         } else {
-            Write-Host "  🔁 Already visited: $FolderPath"
+            if(-not $Silent) {
+                Write-Host "  🔁 Already visited: $FolderPath"
+            }
         }
     }
 }
