@@ -3,11 +3,21 @@ Recursively finds all project dependencies in a solution.
 
 Usage:
 ```ps1
-.\Get-RecursiveReferences.ps1 [-ProjectDir <path>] [-h]
+.\Get-RecursiveReferences.ps1 [-ProjectDirs <paths>] [-h]
 ```
 
 Parameters:
 ```
-  -ProjectDir <path>  Specify the project directory to start the search.
-  -h                  Display a help message.
+  -ProjectDirs <paths>  Specify the project directories to start the search.
+  -ProjectDir <path>    Alias for -ProjectDirs.
+  -h                    Display this help message.
+  -help                 Alias for -h.
+```
+
+Examples:
+```ps1
+.\Get-RecursiveReferences.ps1 -ProjectDir "C:\path\solution\src\Solution.Api\"
+```
+```ps1
+.\Get-RecursiveReferences.ps1 -ProjectDirs "C:\path\solution\src\Solution.Api\", "C:\path\solution\src\Solution.Infrastructure\"
 ```

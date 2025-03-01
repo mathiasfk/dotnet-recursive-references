@@ -1,23 +1,22 @@
 param (
-    [string]$ProjectDir = $null,
+    [Alias("ProjectDir")]
+    [string[]]$ProjectDirs = $null,
+    [Alias("help")]
     [switch]$h
 )
 
 if ($h) {
-    Write-Host "Usage: .\Get-RecursiveReferences.ps1 [-ProjectDir <path>] [-h]"
+    Write-Host "Usage: .\Get-RecursiveReferences.ps1 [-ProjectDirs <paths>] [-h]"
     Write-Host ""
     Write-Host "Parameters:"
-    Write-Host "  -ProjectDir <path>  Specify the project directory to start the search."
-    Write-Host "  -h                  Display this help message."
+    Write-Host "  -ProjectDirs <paths>  Specify the project directories to start the search."
+    Write-Host "  -ProjectDir <path>    Alias for -ProjectDirs."
+    Write-Host "  -h                    Display this help message."
+    Write-Host "  -help                 Alias for -h."
     exit
 }
 
 $OriginalDir = $(Get-Location)
-
-# If the project directory was provided, change to it
-if ($ProjectDir) {
-    Set-Location -Path $ProjectDir
-}
 
 function Get-ProjectReferences {
     param (
@@ -74,8 +73,16 @@ function Get-ProjectReferences {
 $VisitedPaths = New-Object 'System.Collections.Generic.List[System.String]'
 $UniqueDependencies = New-Object 'System.Collections.Generic.List[System.String]'
 
-# Call the function at the start of the script execution
-Get-ProjectReferences -ProjectDir $ProjectDir -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
+# Iterate over each project directory provided
+foreach ($ProjectDir in $ProjectDirs) {
+    # If the project directory was provided, change to it
+    if ($ProjectDir) {
+        Set-Location -Path $ProjectDir
+    }
+
+    # Call the function for each project directory
+    Get-ProjectReferences -ProjectDir $ProjectDir -VisitedPaths $VisitedPaths -UniqueDependencies $UniqueDependencies
+}
 
 # Return to the original directory
 Set-Location -Path $OriginalDir
