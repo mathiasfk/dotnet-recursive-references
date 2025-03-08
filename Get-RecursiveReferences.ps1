@@ -6,11 +6,16 @@ param (
     [switch]$Silent
 )
 
+if ($args.Count -gt 0) {
+    Write-Host "Unexpected params: $($args -join ', ')`n"
+    $h = $true
+}
+
 if ($h) {
     Write-Host "Usage: .\Get-RecursiveReferences.ps1 [-ProjectDirs <paths>] [-h]"
     Write-Host ""
     Write-Host "Parameters:"
-    Write-Host "  -ProjectDirs <paths>  Specify the project directories to start the search."
+    Write-Host "  -ProjectDirs <paths>  Comma-separated project directories to start the search."
     Write-Host "  -ProjectDir <path>    Alias for -ProjectDirs."
     Write-Host "  -Silent               Dot not print the visited directories."
     Write-Host "  -h                    Display this help message."
@@ -80,6 +85,10 @@ $UniqueDependencies = New-Object 'System.Collections.Generic.List[System.String]
 
 # Iterate over each project directory provided
 foreach ($ProjectDir in $ProjectDirs) {
+    if(-not $Silent) {
+        Write-Host "`nEntrypoint: $ProjectDir"
+    }
+
     # If the project directory was provided, change to it
     if ($ProjectDir) {
         Set-Location -Path $ProjectDir
